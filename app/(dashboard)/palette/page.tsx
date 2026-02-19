@@ -54,7 +54,11 @@ export default function PalettePage() {
   })
   const [error, setError] = useState('')
   const [contrastThreshold, setContrastThreshold] = useState([4.5])
-  const [projectSettings, setProjectSettings] = useState<ProjectSettings | null>(null)
+  const [projectSettings, setProjectSettings] = useState<ProjectSettings>({
+    name: '',
+    vibe: 'minimal',
+    brightness: 'light',
+  })
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -83,10 +87,10 @@ export default function PalettePage() {
     } catch {
       // ignore
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const updateSettings = <K extends keyof ProjectSettings>(key: K, value: ProjectSettings[K]) => {
-    if (!projectSettings) return
     const next = { ...projectSettings, [key]: value }
     setProjectSettings(next)
     if (typeof window !== 'undefined') {
@@ -105,7 +109,7 @@ export default function PalettePage() {
 
   const applyFromBase = (
     hex: string,
-    vibe: Vibe = projectSettings?.vibe || 'minimal',
+    vibe: Vibe = projectSettings.vibe,
     threshold: number = contrastThreshold[0]
   ) => {
     // 1. Apply Vibe Shift to the base color
@@ -117,7 +121,7 @@ export default function PalettePage() {
     const tints = generateTints(vibeBase, 8)
 
     // 3. Smart Background based on Project Brightness + Vibe
-    const prefBrightness = projectSettings?.brightness || 'light'
+    const prefBrightness = projectSettings.brightness
     let background = '#F9FAFB' // Default light
 
     if (prefBrightness === 'dark') {
@@ -275,17 +279,15 @@ export default function PalettePage() {
               Assign colors to background, illustration, accent and text roles.
             </p>
           </div>
-          {projectSettings && (
-            <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-white border-2 rounded-2xl shadow-sm">
-              <Info className="w-4 h-4 text-purple-600" />
-              <div className="text-xs">
-                <span className="text-gray-500 font-medium">Context:</span>{' '}
-                <span className="font-bold text-purple-700 capitalize">{projectSettings.vibe}</span>
-                <span className="mx-1 text-gray-300">|</span>
-                <span className="font-bold text-purple-700 capitalize">{projectSettings.brightness}</span>
-              </div>
+          <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-white border-2 rounded-2xl shadow-sm">
+            <Info className="w-4 h-4 text-purple-600" />
+            <div className="text-xs">
+              <span className="text-gray-500 font-medium">Context:</span>{' '}
+              <span className="font-bold text-purple-700 capitalize">{projectSettings.vibe}</span>
+              <span className="mx-1 text-gray-300">|</span>
+              <span className="font-bold text-purple-700 capitalize">{projectSettings.brightness}</span>
             </div>
-          )}
+          </div>
         </div>
 
         <Card className="border-2 shadow-xl">
@@ -316,7 +318,7 @@ export default function PalettePage() {
                     Vibe / Mood <Info className="w-2.5 h-2.5" />
                   </label>
                   <Select
-                    value={projectSettings?.vibe || 'minimal'}
+                    value={projectSettings.vibe}
                     onValueChange={(v) => updateSettings('vibe', v as Vibe)}
                   >
                     <SelectTrigger className="h-9 text-xs">
@@ -337,7 +339,7 @@ export default function PalettePage() {
                     Light / Dark Balance
                   </label>
                   <Select
-                    value={projectSettings?.brightness || 'light'}
+                    value={projectSettings.brightness}
                     onValueChange={(v) => updateSettings('brightness', v as ProjectSettings['brightness'])}
                   >
                     <SelectTrigger className="h-9 text-xs">
