@@ -123,30 +123,44 @@ export default function PalettePage() {
 
     // 3. Smart Background based on Project Brightness + Vibe
     const prefBrightness = brightness
-    let background = '#F9FAFB' // Default light
+    let background = '#F9FAFB' // Default
+
+    const baseColor = tinycolor(vibeBase)
+    const hsl = baseColor.toHsl()
 
     if (prefBrightness === 'dark') {
-      background = '#111827'
+      // Create a very dark version of the base color for the background
+      background = tinycolor({ h: hsl.h, s: Math.min(hsl.s, 0.2), l: 0.08 }).toHexString()
     } else if (prefBrightness === 'mixed') {
-      // For retro/editorial, maybe a warmer off-white
-      background = vibe === 'retro' ? '#FDF8F1' : '#F9FAFB'
+      // A middle ground or vibe-specific
+      if (vibe === 'retro') background = '#FDF8F1'
+      else if (vibe === 'minimal') background = '#F3F4F6'
+      else background = '#F9FAFB'
     } else {
-      // brightness === 'light'
-      background = vibe === 'retro' ? '#FDF8F1' : '#F9FAFB'
+      // Mostly Light: Create a very subtle tint of the base color
+      background = tinycolor({ h: hsl.h, s: Math.min(hsl.s, 0.1), l: 0.98 }).toHexString()
     }
 
     // 4. Role Assignment
-    const illustration = vibeBase
-    // Playful vibe uses triadic color for accent
-    const accent = vibe === 'playful' ? (harmony.triadic[1] || harmony.complementary) : harmony.complementary
+    // Illustration should pop - if background is dark, lighten it; if light, keep or saturate
+    const isBgDark = tinycolor(background).isDark()
+    const illustration = isBgDark
+      ? tints[2] || vibeBase // Use a slightly lighter tint for dark mode
+      : vibeBase
+
+    // Accent should contrast with base and background
+    const accentCandidate = vibe === 'playful'
+      ? (harmony.triadic[1] || harmony.complementary)
+      : harmony.complementary
+
+    const accent = ensureContrast(accentCandidate, background, Math.max(threshold, 3.0))
 
     // 5. Contrast-aware text
-    const isBgDark = tinycolor(background).isDark()
-    const targetHeadingCandidate = isBgDark ? tints[6] : shades[6]
-    const targetBodyCandidate = isBgDark ? tints[4] : shades[4]
+    const targetHeadingCandidate = isBgDark ? tints[7] || '#FFFFFF' : shades[7] || '#111827'
+    const targetBodyCandidate = isBgDark ? tints[5] || '#E5E7EB' : shades[5] || '#374151'
 
     const next: PaletteSlots = {
-      base: hex, // keep original hex as reference
+      base: hex,
       background,
       illustration,
       accent,
