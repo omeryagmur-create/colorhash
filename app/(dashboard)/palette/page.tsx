@@ -97,7 +97,7 @@ export default function PalettePage() {
       window.localStorage.setItem('ch_project_settings_v1', JSON.stringify(next))
     }
     // Re-generate if settings change
-    applyFromBase(base, next.vibe, contrastThreshold[0])
+    applyFromBase(base, next.vibe, next.brightness, contrastThreshold[0])
   }
 
   const saveSlots = (next: PaletteSlots) => {
@@ -110,6 +110,7 @@ export default function PalettePage() {
   const applyFromBase = (
     hex: string,
     vibe: Vibe = projectSettings.vibe,
+    brightness: ProjectSettings['brightness'] = projectSettings.brightness,
     threshold: number = contrastThreshold[0]
   ) => {
     // 1. Apply Vibe Shift to the base color
@@ -121,7 +122,7 @@ export default function PalettePage() {
     const tints = generateTints(vibeBase, 8)
 
     // 3. Smart Background based on Project Brightness + Vibe
-    const prefBrightness = projectSettings.brightness
+    const prefBrightness = brightness
     let background = '#F9FAFB' // Default light
 
     if (prefBrightness === 'dark') {
@@ -164,7 +165,7 @@ export default function PalettePage() {
     }
     const primary = parsed[0]
     setBase(primary)
-    applyFromBase(primary)
+    applyFromBase(primary, projectSettings.vibe, projectSettings.brightness)
   }
 
   const handleSlotChange = (slot: SlotKey, value: string) => {
