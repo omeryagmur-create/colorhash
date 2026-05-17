@@ -32,7 +32,7 @@ export default function LandingPage() {
             Brand Intelligence / Visual Harmony
           </p>
           <p className="text-sm font-medium bg-gradient-to-r from-gray-400 via-gray-500 to-gray-400 bg-clip-text text-transparent italic">
-            Built with чай and кофе. для Паулы :)
+            Built with чай and кофе. для Паулы :) Hi Paula, you closed your account before I could reply to your letter. I would have loved to reply. I would be very surprised and happy if you're reading this now, because I don't think you'll read it. Anyway, I would have liked to write you a reply. My Gmail is: m.omeryagmr@gmail.com. If you're reading this, please send a message to this email so I can write you one last letter. Don't worry, it's just one last letter.
           </p>
         </div>
       </div>
